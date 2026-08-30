@@ -4,9 +4,6 @@ import vinext from 'vinext';
 import { defineConfig } from 'vite';
 import hostingConfig from './.openai/hosting.json' with { type: 'json' };
 
-const LOCAL_DEVELOPMENT_DATABASE_ID =
-  '00000000-0000-4000-8000-000000000000';
-
 const { d1, r2 } = hostingConfig;
 
 // macOS Seatbelt blocks FSEvents, so Codex previews need polling for HMR.
@@ -20,7 +17,6 @@ const localBindingConfig = {
         {
           binding: d1,
           database_name: 'site-creator-d1',
-          database_id: LOCAL_DEVELOPMENT_DATABASE_ID,
         },
       ]
     : [],
