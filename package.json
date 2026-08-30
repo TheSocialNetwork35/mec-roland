@@ -15,6 +15,7 @@
     "cf:types": "wrangler types --config wrangler.jsonc",
     "lint": "oxlint",
     "format": "oxfmt",
+    "auth:hash": "node scripts/hash-admin-password.mjs",
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {

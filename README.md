@@ -36,6 +36,18 @@ Erforderliche Bindings:
 
 Das Pflege-Passwort wird nie im Repository gespeichert. Ohne das Cloudflare-Secret bleibt die Anmeldung geschlossen. Die Anwendung vergleicht ausschliesslich einen konstantzeitlich geprüften Hash des Passworts, begrenzt Fehlversuche pro Client und legt nach erfolgreicher Anmeldung eine nicht erratbare Sitzung für zwölf Stunden in D1 an.
 
+### Pflege-Passwort ändern
+
+Das bestehende Klartext-Passwort kann nicht aus dem Hash ausgelesen werden. Zum Zurücksetzen wird lokal ein neuer PBKDF2-Hash erzeugt und anschliessend als Cloudflare-Secret gespeichert:
+
+```bash
+npm run auth:hash
+npx wrangler secret put ADMIN_PASSWORD_HASH
+npx wrangler d1 execute mec-roland-db --remote --command "DELETE FROM admin_sessions"
+```
+
+Der erste Befehl fragt das neue Passwort verdeckt zweimal ab und gibt ausschliesslich den Hash aus. Diesen Hash beim zweiten Befehl in die verdeckte Cloudflare-Eingabe einfügen. Der dritte Befehl meldet vorhandene Pflege-Sitzungen ab, damit nur noch das neue Passwort gilt.
+
 ## Qualitätsprüfung
 
 ```bash

@@ -228,7 +228,7 @@ main { position: relative; overflow: clip; background: var(--background); }
 .hero__scroll span { width: 36px; height: 1px; display: block; overflow: hidden; background: rgb(255 255 255 / 30%); }
 .hero__scroll span::after { content: ''; width: 100%; height: 100%; display: block; background: #fff; animation: scroll-line 1.8s var(--ease-out) infinite; }
 .marquee { --marquee-gap: clamp(1.5rem, 3vw, 3.25rem); overflow: hidden; padding: 17px 0; background: var(--brand); color: #fff; font-family: var(--font-display), sans-serif; font-size: clamp(1.05rem, 1.8vw, 1.45rem); font-weight: 650; letter-spacing: .01em; white-space: nowrap; }
-.marquee__track { width: max-content; display: flex; align-items: center; animation: marquee 55s linear infinite; will-change: transform; }
+.marquee__track { width: max-content; display: flex; align-items: center; animation: marquee 150s linear infinite; will-change: transform; }
 .marquee__group { flex: none; display: flex; align-items: center; }
 .marquee__item { flex: none; display: inline-flex; align-items: center; }
 .marquee__item::after { content: '•'; margin-inline: calc(var(--marquee-gap) / 2); color: rgb(255 255 255 / 68%); font-size: .72em; }
