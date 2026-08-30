@@ -7,10 +7,9 @@ const COOKIE_NAME = 'mec_admin_session';
 const SESSION_LIFETIME_SECONDS = 12 * 60 * 60;
 const encoder = new TextEncoder();
 type LoginRecord = { attempts: number; window_started: number; blocked_until: number };
-const DEFAULT_PASSWORD_HASH = 'sha256:RnUSj2HQzq-Lz3Nbmi1tZJqBd-KCYqE1JClUAKQJ0PM';
 
 function runtimePasswordHash(): string {
-  return env.ADMIN_PASSWORD_HASH || process.env.ADMIN_PASSWORD_HASH || DEFAULT_PASSWORD_HASH;
+  return env.ADMIN_PASSWORD_HASH || process.env.ADMIN_PASSWORD_HASH || '';
 }
 
 export async function getAdminIdentity(): Promise<AdminIdentity | null> {

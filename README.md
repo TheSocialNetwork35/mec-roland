@@ -15,14 +15,16 @@ npm install
 npm run dev
 ```
 
-Die lokale Umgebung stellt D1 und R2 bereit. Öffentliche Routen bleiben frei; `/pflege` und die Schreib-API prüfen eine zufällige, `HttpOnly`-geschützte Sitzung serverseitig in D1. `ADMIN_PASSWORD_HASH` kann optional gesetzt werden (siehe `.env.example`).
+Die lokale Umgebung stellt D1 und R2 bereit. Öffentliche Routen bleiben frei; `/pflege` und die Schreib-API prüfen eine zufällige, `HttpOnly`-geschützte Sitzung serverseitig in D1. Für die lokale Anmeldung muss `ADMIN_PASSWORD_HASH` in einer ignorierten `.dev.vars` gesetzt werden (siehe `.dev.vars.example`).
 
 ## Produktion
 
-Der Build erzeugt Cloudflare-kompatibles ESM mit statischen Assets, D1-Migration und R2-Binding:
+Die Anwendung wird als Cloudflare Worker mit global ausgelieferten Static Assets betrieben. D1 speichert CMS-Daten und Sitzungen, R2 die hochgeladenen Bilder und PDFs.
 
 ```bash
-npm run build
+npx wrangler d1 migrations apply mec-roland-db --remote
+npx wrangler secret put ADMIN_PASSWORD_HASH
+npm run deploy
 ```
 
 Erforderliche Bindings:
@@ -31,14 +33,14 @@ Erforderliche Bindings:
 - R2: `FILES`
 - Secret: `ADMIN_PASSWORD_HASH` im Format `pbkdf2_sha256:210000:SALT:HASH`
 
-Das Pflege-Passwort wird nie im Repository gespeichert. Die Anwendung vergleicht ausschliesslich einen konstantzeitlich geprüften Hash des zufällig erzeugten Hochentropie-Passworts, begrenzt Fehlversuche pro Client und legt nach erfolgreicher Anmeldung eine nicht erratbare Sitzung für zwölf Stunden in D1 an. Ein Cloudflare-Runtime-Wert kann den projektspezifischen Standard-Hash durch PBKDF2-SHA-256 ersetzen.
+Das Pflege-Passwort wird nie im Repository gespeichert. Ohne das Cloudflare-Secret bleibt die Anmeldung geschlossen. Die Anwendung vergleicht ausschliesslich einen konstantzeitlich geprüften Hash des Passworts, begrenzt Fehlversuche pro Client und legt nach erfolgreicher Anmeldung eine nicht erratbare Sitzung für zwölf Stunden in D1 an.
 
 ## Qualitätsprüfung
 
 ```bash
 npm run lint
 npx tsc --noEmit
-npm run build
+npm run deploy:check
 ```
 
 Die Sitemap liegt unter `/sitemap.xml`, Robots-Regeln unter `/robots.txt`, das Web-App-Manifest unter `/manifest.webmanifest`.
