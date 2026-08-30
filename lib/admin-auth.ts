@@ -36,11 +36,11 @@ export async function verifyAdminPassword(password: string): Promise<boolean> {
     const derived = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: fromBase64Url(saltRaw), iterations }, passwordKey, 256);
     const expected = fromBase64Url(expectedRaw);
     if (expected.byteLength !== 32) return false;
-    const payload = encoder.encode('mec-roland-password-check');
-    const expectedKey = await crypto.subtle.importKey('raw', expected, { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']);
-    const candidateKey = await crypto.subtle.importKey('raw', derived, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
-    const candidateSignature = await crypto.subtle.sign('HMAC', candidateKey, payload);
-    return crypto.subtle.verify('HMAC', expectedKey, candidateSignature, payload);
+    const timingSafeEqual = (crypto.subtle as SubtleCrypto & { timingSafeEqual?: (a: BufferSource, b: BufferSource) => boolean }).timingSafeEqual;
+    if (timingSafeEqual) return timingSafeEqual.call(crypto.subtle, derived, expected);
+    const actual = new Uint8Array(derived); let difference = 0;
+    for (let index = 0; index < actual.length; index += 1) difference |= actual[index] ^ expected[index];
+    return difference === 0;
   } catch { return false; }
 }
 
@@ -91,7 +91,7 @@ export async function recordLoginAttempt(request: Request, success: boolean): Pr
 async function findLoginRecord(request: Request): Promise<{ key: string; record: LoginRecord | null }> {
   await ensureAuthTables();
   const ip = request.headers.get('cf-connecting-ip') || request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'local';
-  const key = await sha256(`mec-roland-login-rate-v1:${ip}`);
+  const key = await sha256(`mec-roland-login-rate-v2:${ip}`);
   const record = await env.DB.prepare('SELECT attempts, window_started, blocked_until FROM admin_login_attempts WHERE key_hash = ?').bind(key).first<LoginRecord>();
   return { key, record };
 }
