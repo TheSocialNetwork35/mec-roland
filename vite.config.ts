@@ -41,6 +41,10 @@ export default defineConfig(async () => {
   const { cloudflare } = await import('@cloudflare/vite-plugin');
 
   return {
+    // Vite's asynchronous public-directory copier can stall on macOS File
+    // Provider volumes. The npm postbuild copies these immutable assets with
+    // the synchronous Node API instead.
+    publicDir: 'public-disabled',
     css: { postcss: { plugins: [tailwindcss()] } },
     server: isCodexSeatbeltSandbox
       ? { watch: { useFsEvents: false, usePolling: true } }

@@ -47,6 +47,14 @@ export type SiteContent = {
   contact: { title: string; paragraphs: string[]; capacity: string; addressLabel: string };
   links: { title: string; items: Array<{ intro: string; label: string; href: string }> };
   imprint: { title: string; contactLabel: string };
+  labels: {
+    heroMenuCta: string; heroScroll: string; marquee: string; homeTeamCta: string; homeFeatureCaption: string;
+    pageIndex: string; menuEyebrow: string; teamEyebrow: string; contactEyebrow: string; linksEyebrow: string; imprintEyebrow: string;
+    galleryEyebrow: string; galleryTitle: string; galleryLead: string; mapCta: string;
+    visitHoursEyebrow: string; visitHoursTitle: string; visitOrderEyebrow: string; visitOrderTitle: string;
+    visitPlaceEyebrow: string; visitPlaceTitle: string; routeCta: string;
+    footerImprint: string; footerCare: string; legalPhone: string; legalEmail: string;
+  };
   seo: Record<'home' | 'menu' | 'team' | 'contact' | 'links' | 'imprint', SeoEntry>;
 };
 
@@ -150,6 +158,17 @@ export const defaultSiteContent: SiteContent = {
     ],
   },
   imprint: { title: 'Impressum', contactLabel: 'Kontaktadresse' },
+  labels: {
+    heroMenuCta: 'Speisekarte entdecken', heroScroll: 'Scroll',
+    marquee: 'Frisch zubereitet · Regional gedacht · Mit Herz serviert · Kaltbrunn · Frisch zubereitet · Regional gedacht ·',
+    homeTeamCta: 'Menschen kennenlernen', homeFeatureCaption: 'Gastgeber aus Leidenschaft', pageIndex: 'MR / 8722',
+    menuEyebrow: 'Frisch zubereitet', teamEyebrow: 'Mit Freude und Leidenschaft', contactEyebrow: 'Wir freuen uns auf Sie',
+    linksEyebrow: 'Regional verbunden', imprintEyebrow: 'Mec Roland · Kaltbrunn', galleryEyebrow: 'Einblicke',
+    galleryTitle: 'Aus unserer Küche', galleryLead: 'Frisch, unkompliziert und mit viel Liebe zubereitet.', mapCta: 'Route in Google Maps öffnen',
+    visitHoursEyebrow: 'Öffnungszeiten', visitHoursTitle: 'Willkommen', visitOrderEyebrow: 'Vorbestellen', visitOrderTitle: 'Einfach anrufen',
+    visitPlaceEyebrow: 'Hier finden Sie uns', visitPlaceTitle: 'Kaltbrunn', routeCta: 'Route öffnen',
+    footerImprint: 'Impressum', footerCare: 'Pflege', legalPhone: 'Telefon', legalEmail: 'Mail',
+  },
   seo: {
     home: { title: 'Mec Roland, Kaltbrunn | Das Restaurant mit Herz', description: 'Restaurant Mec Roland in Kaltbrunn: Burger und regionale Küche, frisch zubereitet und herzlich serviert.', image: '/og.png' },
     menu: { title: 'Menü | Mec Roland, Kaltbrunn', description: 'Entdecken Sie die Speisekarte und frisch zubereiteten Burger des Restaurant Mec Roland in Kaltbrunn.', image: media('199-MecRoland_Essen-01.jpg') },

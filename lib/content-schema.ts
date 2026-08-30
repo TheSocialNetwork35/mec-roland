@@ -30,5 +30,13 @@ export const siteContentSchema = z.object({
   contact: z.object({ title: shortText, paragraphs: z.array(cleanText).max(30), capacity: cleanText, addressLabel: shortText }),
   links: z.object({ title: shortText, items: z.array(z.object({ intro: cleanText, label: shortText, href: shortText })).max(50) }),
   imprint: z.object({ title: shortText, contactLabel: shortText }),
+  labels: z.object({
+    heroMenuCta: shortText, heroScroll: shortText, marquee: shortText, homeTeamCta: shortText, homeFeatureCaption: shortText,
+    pageIndex: shortText, menuEyebrow: shortText, teamEyebrow: shortText, contactEyebrow: shortText, linksEyebrow: shortText, imprintEyebrow: shortText,
+    galleryEyebrow: shortText, galleryTitle: shortText, galleryLead: shortText, mapCta: shortText,
+    visitHoursEyebrow: shortText, visitHoursTitle: shortText, visitOrderEyebrow: shortText, visitOrderTitle: shortText,
+    visitPlaceEyebrow: shortText, visitPlaceTitle: shortText, routeCta: shortText,
+    footerImprint: shortText, footerCare: shortText, legalPhone: shortText, legalEmail: shortText,
+  }),
   seo: z.object({ home: seo, menu: seo, team: seo, contact: seo, links: seo, imprint: seo }),
 });

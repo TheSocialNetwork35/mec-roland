@@ -15,7 +15,7 @@ npm install
 npm run dev
 ```
 
-Die lokale Sites-Umgebung stellt D1, R2 und eine lokale Testidentität bereit. Öffentliche Routen bleiben frei; `/pflege` und die Schreib-API prüfen die Identität serverseitig.
+Die lokale Umgebung stellt D1 und R2 bereit. Öffentliche Routen bleiben frei; `/pflege` und die Schreib-API prüfen eine signierte, `HttpOnly`-geschützte Sitzung serverseitig. Für den lokalen Login müssen `ADMIN_PASSWORD_HASH` und `ADMIN_SESSION_SECRET` gesetzt sein (siehe `.env.example`).
 
 ## Produktion
 
@@ -29,9 +29,10 @@ Erforderliche Bindings:
 
 - D1: `DB`
 - R2: `FILES`
-- Laufzeitvariable: `ADMIN_EMAILS` als kommagetrennte Allowlist für die Sites-Anmeldung
+- Secret: `ADMIN_PASSWORD_HASH` im Format `pbkdf2_sha256$210000$SALT$HASH`
+- Secret: `ADMIN_SESSION_SECRET` als zufälliger Wert mit mindestens 32 Bytes
 
-Für die öffentliche Domain wird eine Cloudflare-Access-Anwendung für `mec-roland.ch/pflege*` und `mec-roland.ch/api/pflege/*` mit einer Allow-Policy für die Betreiber eingerichtet. Cloudflare Access liefert die verifizierte E-Mail an die Anwendung; ohne Access- oder erlaubte Sites-Identität bleibt der Verwaltungsbereich geschlossen.
+Das Pflege-Passwort wird nie im Repository gespeichert. Die Anwendung vergleicht ausschliesslich den PBKDF2-SHA-256-Hash, begrenzt Fehlversuche pro Client und setzt nach erfolgreicher Anmeldung eine signierte Sitzung für zwölf Stunden. Beide Werte werden in Cloudflare als verschlüsselte Secrets konfiguriert.
 
 ## Qualitätsprüfung
 

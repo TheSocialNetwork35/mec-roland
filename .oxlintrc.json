@@ -29,6 +29,7 @@
     "build/**",
     "dist/**",
     "coverage/**",
+    "archive/**",
     "components/ui/**",
     "hooks/**",
     "next-env.d.ts"

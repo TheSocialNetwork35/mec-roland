@@ -1,10 +1,6 @@
 import type { Metadata } from 'next';
-import { Baloo_2, Source_Sans_3 } from 'next/font/google';
 import { getSiteContent } from '@/lib/content-store';
 import './globals.css';
-
-const sourceSans = Source_Sans_3({ variable: '--font-body', subsets: ['latin'], display: 'swap' });
-const baloo = Baloo_2({ variable: '--font-display', subsets: ['latin'], display: 'swap' });
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://mec-roland.ch'),
@@ -25,5 +21,5 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     address: { '@type': 'PostalAddress', streetAddress: g.addressStreet, postalCode: g.addressPostalCity.split(' ')[0], addressLocality: g.addressPostalCity.replace(/^\d+\s*/, ''), addressCountry: 'CH' },
     openingHours: g.openingTimes, servesCuisine: 'Burger',
   };
-  return <html lang="de-CH"><body className={`${sourceSans.variable} ${baloo.variable}`}><a className="skip-link" href="#main-content">Zum Inhalt springen</a>{children}<script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }} /></body></html>;
+  return <html lang="de-CH"><body><a className="skip-link" href="#main-content">Zum Inhalt springen</a>{children}<script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }} /></body></html>;
 }

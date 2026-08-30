@@ -9,7 +9,8 @@ const CONTENT_ID = 'main';
 export async function getSiteContent(): Promise<SiteContent> {
   try {
     const [record] = await getDb().select().from(siteContent).where(eq(siteContent.id, CONTENT_ID)).limit(1);
-    return record?.data ?? defaultSiteContent;
+    if (!record?.data) return defaultSiteContent;
+    return { ...defaultSiteContent, ...record.data, labels: { ...defaultSiteContent.labels, ...record.data.labels } };
   } catch {
     return defaultSiteContent;
   }

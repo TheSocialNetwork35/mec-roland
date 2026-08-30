@@ -2,7 +2,9 @@
 
 ## Verwaltungszugriff
 
-`/pflege` und `/api/pflege/*` treffen keine Autorisierungsentscheidung im Browser. Die Anwendung akzeptiert ausschliesslich eine von Cloudflare Access verifizierte E-Mail oder eine Sites-Identität, deren E-Mail in `ADMIN_EMAILS` enthalten ist. Die lokale `@sites.test`-Identität wird nur von der lokalen Sites-Laufzeit erzeugt.
+`/pflege` und `/api/pflege/*` treffen keine Autorisierungsentscheidung im Browser. Die Anwendung akzeptiert ausschliesslich eine gültige, HMAC-signierte Sitzung. Das Pflege-Passwort wird mit PBKDF2-SHA-256 (mindestens 100.000 Iterationen) geprüft und nie im Klartext gespeichert.
+
+Nach fünf falschen Versuchen wird der Client für 15 Minuten gesperrt. Das Sitzungscookie ist `HttpOnly`, `Secure`, `SameSite=Strict`, auf die gesamte Anwendung begrenzt und läuft nach zwölf Stunden ab. `ADMIN_PASSWORD_HASH` und `ADMIN_SESSION_SECRET` werden ausschliesslich als Cloudflare-Secrets hinterlegt.
 
 Für die Produktionsdomain müssen beide Pfadmuster durch eine Cloudflare-Access-Allow-Policy auf die Betreiber beschränkt werden:
 

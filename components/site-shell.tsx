@@ -1,28 +1,20 @@
 import Link from 'next/link';
-import { Mail, MapPin, Menu, Phone, X } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import type { SiteContent } from '@/lib/site-content';
+import { SmartHeader } from '@/components/smart-header';
 
 export function SiteHeader({ content }: { content: SiteContent['global'] }) {
-  return <header className="site-header">
-    <div className="topbar"><div className="shell topbar__inner">
-      <p><MapPin aria-hidden="true" /> {content.addressStreet} · {content.addressPostalCity}</p>
-      <div><a href={`tel:${content.phoneHref}`}><Phone aria-hidden="true" /> {content.phoneDisplay}</a><a href={`mailto:${content.emailPrimary}`}><Mail aria-hidden="true" /> {content.emailPrimary}</a></div>
-    </div></div>
-    <div className="shell nav-wrap">
-      <Link className="brand" href="/" aria-label={`${content.restaurantName} – Startseite`}><img src={content.logo} alt={content.restaurantName} width="425" height="215" /></Link>
-      <nav aria-label="Hauptnavigation">{content.navigation.map((item) => <Link key={item.href} href={item.href}>{item.label}</Link>)}</nav>
-      <details className="mobile-menu"><summary aria-label="Menü öffnen"><Menu className="open-icon" aria-hidden="true" /><X className="close-icon" aria-hidden="true" /></summary><nav aria-label="Mobile Navigation">{content.navigation.map((item) => <Link key={item.href} href={item.href}>{item.label}</Link>)}</nav></details>
-    </div>
-  </header>;
+  return <SmartHeader content={content} />;
 }
 
-export function SiteFooter({ content }: { content: SiteContent['global'] }) {
+export function SiteFooter({ content }: { content: SiteContent }) {
+  const global = content.global; const labels = content.labels;
   return <footer className="footer">
     <div className="shell footer__main">
-      <Link className="brand brand--footer" href="/"><img src={content.logo} alt={content.restaurantName} width="425" height="215" /></Link>
-      <p>{content.companyName}<br />{content.addressStreet}<br />{content.addressPostalCity}</p>
-      <div className="footer__links"><a href={`tel:${content.phoneHref}`}>{content.phoneDisplay}</a><a href={`mailto:${content.emailPrimary}`}>{content.emailPrimary}</a><Link href="/impressum/">Impressum</Link><Link href="/pflege/">Pflege</Link></div>
+      <Link className="brand brand--footer" href="/"><img src={global.logo} alt={global.restaurantName} width="425" height="215" /></Link>
+      <p>{global.addressStreet} · {global.addressPostalCity}</p>
+      <div className="footer__links"><a href={`tel:${global.phoneHref}`}>{global.phoneDisplay}</a><a href={`mailto:${global.emailPrimary}`}>{global.emailPrimary}</a><Link href="/impressum/">{labels.footerImprint}</Link><Link href="/pflege/">{labels.footerCare}</Link><a className="footer__route" href={global.mapUrl} target="_blank" rel="noreferrer" aria-label={labels.routeCta}><ArrowUpRight aria-hidden="true" /></a></div>
     </div>
-    <div className="shell footer__fineprint">© {new Date().getFullYear()} {content.companyName} · {content.footerText}</div>
+    <div className="shell footer__fineprint">© {new Date().getFullYear()} {global.companyName} · {global.footerText}</div>
   </footer>;
 }

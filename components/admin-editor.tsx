@@ -67,8 +67,7 @@ export function AdminEditor({ initialContent, initialMedia, user }: { initialCon
       <Link className="admin-brand" href="/" target="_blank"><img src={content.global.logo} alt={content.global.restaurantName} width="425" height="215" /><ExternalLink aria-hidden="true" /></Link>
       <div><p className="admin-kicker">Website-Verwaltung</p><h1>Pflege</h1></div>
       <p className="admin-user">Angemeldet als<br /><strong>{user.name}</strong></p>
-      {/* oxlint-disable-next-line next/no-html-link-for-pages -- the sign-out endpoint requires a document navigation */}
-      <a className="admin-signout" href="/signout-with-chatgpt?return_to=/"><LogOut aria-hidden="true" /> Abmelden</a>
+      <form action="/api/pflege/logout" method="post"><button className="admin-signout" type="submit"><LogOut aria-hidden="true" /> Abmelden</button></form>
     </aside>
     <main className="admin-main">
       <header className="admin-toolbar"><div><p className="admin-kicker">Mec Roland</p><h2>Inhalte bearbeiten</h2></div><div className="admin-actions"><output aria-live="polite">{status}</output><Button onClick={save} disabled={saving} className="admin-save">{saving ? <Loader2 className="spin" /> : <Save />} Speichern</Button></div></header>
@@ -94,6 +93,34 @@ export function AdminEditor({ initialContent, initialMedia, user }: { initialCon
           <StringList label="Öffnungszeiten" values={content.global.openingTimes} onChange={(v) => update(['global','openingTimes'], v)} />
           <TextAreaField label="Hinweis Vorbestellung" value={content.global.orderingNote} onChange={(v) => update(['global','orderingNote'], v)} />
           <TextAreaField label="Footer-Text" value={content.global.footerText} onChange={(v) => update(['global','footerText'], v)} />
+          <h3 className="admin-subtitle">Oberfläche & Microcopy</h3><FieldGrid>
+            <TextField label="Hero-Menübutton" value={content.labels.heroMenuCta} onChange={(v) => update(['labels','heroMenuCta'], v)} />
+            <TextField label="Scroll-Hinweis" value={content.labels.heroScroll} onChange={(v) => update(['labels','heroScroll'], v)} />
+            <TextAreaField label="Laufband-Text" value={content.labels.marquee} onChange={(v) => update(['labels','marquee'], v)} />
+            <TextField label="Team-Link Startseite" value={content.labels.homeTeamCta} onChange={(v) => update(['labels','homeTeamCta'], v)} />
+            <TextField label="Bildlegende Startseite" value={content.labels.homeFeatureCaption} onChange={(v) => update(['labels','homeFeatureCaption'], v)} />
+            <TextField label="Hero-Seitenindex" value={content.labels.pageIndex} onChange={(v) => update(['labels','pageIndex'], v)} />
+            <TextField label="Kicker Menüseite" value={content.labels.menuEyebrow} onChange={(v) => update(['labels','menuEyebrow'], v)} />
+            <TextField label="Kicker Teamseite" value={content.labels.teamEyebrow} onChange={(v) => update(['labels','teamEyebrow'], v)} />
+            <TextField label="Kicker Kontaktseite" value={content.labels.contactEyebrow} onChange={(v) => update(['labels','contactEyebrow'], v)} />
+            <TextField label="Kicker Linksseite" value={content.labels.linksEyebrow} onChange={(v) => update(['labels','linksEyebrow'], v)} />
+            <TextField label="Kicker Impressum" value={content.labels.imprintEyebrow} onChange={(v) => update(['labels','imprintEyebrow'], v)} />
+            <TextField label="Galerie-Kicker" value={content.labels.galleryEyebrow} onChange={(v) => update(['labels','galleryEyebrow'], v)} />
+            <TextField label="Galerie-Titel" value={content.labels.galleryTitle} onChange={(v) => update(['labels','galleryTitle'], v)} />
+            <TextField label="Galerie-Einleitung" value={content.labels.galleryLead} onChange={(v) => update(['labels','galleryLead'], v)} />
+            <TextField label="Karten-Button" value={content.labels.mapCta} onChange={(v) => update(['labels','mapCta'], v)} />
+            <TextField label="Besuch: Öffnungszeiten-Kicker" value={content.labels.visitHoursEyebrow} onChange={(v) => update(['labels','visitHoursEyebrow'], v)} />
+            <TextField label="Besuch: Öffnungszeiten-Titel" value={content.labels.visitHoursTitle} onChange={(v) => update(['labels','visitHoursTitle'], v)} />
+            <TextField label="Besuch: Vorbestellung-Kicker" value={content.labels.visitOrderEyebrow} onChange={(v) => update(['labels','visitOrderEyebrow'], v)} />
+            <TextField label="Besuch: Vorbestellung-Titel" value={content.labels.visitOrderTitle} onChange={(v) => update(['labels','visitOrderTitle'], v)} />
+            <TextField label="Besuch: Ort-Kicker" value={content.labels.visitPlaceEyebrow} onChange={(v) => update(['labels','visitPlaceEyebrow'], v)} />
+            <TextField label="Besuch: Ort-Titel" value={content.labels.visitPlaceTitle} onChange={(v) => update(['labels','visitPlaceTitle'], v)} />
+            <TextField label="Routen-Link" value={content.labels.routeCta} onChange={(v) => update(['labels','routeCta'], v)} />
+            <TextField label="Footer: Impressum" value={content.labels.footerImprint} onChange={(v) => update(['labels','footerImprint'], v)} />
+            <TextField label="Footer: Pflege" value={content.labels.footerCare} onChange={(v) => update(['labels','footerCare'], v)} />
+            <TextField label="Impressum: Telefon" value={content.labels.legalPhone} onChange={(v) => update(['labels','legalPhone'], v)} />
+            <TextField label="Impressum: E-Mail" value={content.labels.legalEmail} onChange={(v) => update(['labels','legalEmail'], v)} />
+          </FieldGrid>
           <ObjectList title="Navigation" items={content.global.navigation} addLabel="Navigationspunkt" onAdd={() => update(['global','navigation'], [...content.global.navigation, { label: '', href: '/' }])} onRemove={(i) => update(['global','navigation'], content.global.navigation.filter((_, index) => index !== i))}>{(item, i) => <FieldGrid><TextField label="Bezeichnung" value={item.label} onChange={(v) => update(['global','navigation',i,'label'], v)} /><TextField label="URL" value={item.href} onChange={(v) => update(['global','navigation',i,'href'], v)} /></FieldGrid>}</ObjectList>
         </Section></TabsContent>
         <TabsContent value="home"><Section title="Startseite" description="Hero, Willkommenstext, Bild und aktuelle Meldung.">
