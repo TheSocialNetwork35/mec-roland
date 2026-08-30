@@ -29,7 +29,7 @@ Erforderliche Bindings:
 
 - D1: `DB`
 - R2: `FILES`
-- Secret: `ADMIN_PASSWORD_HASH` im Format `pbkdf2_sha256$210000$SALT$HASH`
+- Secret: `ADMIN_PASSWORD_HASH` im Format `pbkdf2_sha256:210000:SALT:HASH`
 - Secret: `ADMIN_SESSION_SECRET` als zufälliger Wert mit mindestens 32 Bytes
 
 Das Pflege-Passwort wird nie im Repository gespeichert. Die Anwendung vergleicht ausschliesslich den PBKDF2-SHA-256-Hash, begrenzt Fehlversuche pro Client und setzt nach erfolgreicher Anmeldung eine signierte Sitzung für zwölf Stunden. Beide Werte werden in Cloudflare als verschlüsselte Secrets konfiguriert.

@@ -22,7 +22,8 @@ export async function getAdminIdentity(): Promise<AdminIdentity | null> {
 
 export async function verifyAdminPassword(password: string): Promise<boolean> {
   if (!env.ADMIN_PASSWORD_HASH || password.length > 256) return false;
-  const [algorithm, iterationsRaw, saltRaw, expectedRaw] = env.ADMIN_PASSWORD_HASH.split('$');
+  const separator = env.ADMIN_PASSWORD_HASH.includes(':') ? ':' : '$';
+  const [algorithm, iterationsRaw, saltRaw, expectedRaw] = env.ADMIN_PASSWORD_HASH.split(separator);
   const iterations = Number(iterationsRaw);
   if (algorithm !== 'pbkdf2_sha256' || !Number.isInteger(iterations) || iterations < 100_000 || iterations > 600_000) return false;
   try {
