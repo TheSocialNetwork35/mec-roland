@@ -2,7 +2,7 @@
 
 ## Verwaltungszugriff
 
-`/pflege` und `/api/pflege/*` treffen keine Autorisierungsentscheidung im Browser. Die Anwendung akzeptiert ausschliesslich ein zufälliges 256-Bit-Sitzungstoken, dessen SHA-256-Hash serverseitig in D1 vorliegt. Das Pflege-Passwort wird mit PBKDF2-SHA-256 (mindestens 100.000 Iterationen) geprüft und nie im Klartext gespeichert.
+`/pflege` und `/api/pflege/*` treffen keine Autorisierungsentscheidung im Browser. Die Anwendung akzeptiert ausschliesslich ein zufälliges 256-Bit-Sitzungstoken, dessen SHA-256-Hash serverseitig in D1 vorliegt. Das zufällig erzeugte Hochentropie-Passwort wird konstantzeitlich gegen seinen SHA-256-Digest geprüft und nie im Klartext gespeichert; ein Runtime-Override kann PBKDF2-SHA-256 verwenden.
 
 Nach fünf falschen Versuchen wird der Client für 15 Minuten gesperrt. Das Sitzungscookie ist `HttpOnly`, `Secure`, `SameSite=Strict`, auf die gesamte Anwendung begrenzt, wird beim Logout widerrufen und läuft nach zwölf Stunden ab. `ADMIN_PASSWORD_HASH` kann den projektspezifischen Standard-Hash als Cloudflare-Laufzeitwert ersetzen.
 

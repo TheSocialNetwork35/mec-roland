@@ -7,7 +7,7 @@ const COOKIE_NAME = 'mec_admin_session';
 const SESSION_LIFETIME_SECONDS = 12 * 60 * 60;
 const encoder = new TextEncoder();
 type LoginRecord = { attempts: number; window_started: number; blocked_until: number };
-const DEFAULT_PASSWORD_HASH = 'pbkdf2_sha256:210000:MqAbW1-Odl4Kaq1BZP6oO-5X:hoh03MoYBoDL5dN6x5dFcKe0lAB_Y_INway8lezp-3g';
+const DEFAULT_PASSWORD_HASH = 'sha256:RnUSj2HQzq-Lz3Nbmi1tZJqBd-KCYqE1JClUAKQJ0PM';
 
 function runtimePasswordHash(): string {
   return env.ADMIN_PASSWORD_HASH || process.env.ADMIN_PASSWORD_HASH || DEFAULT_PASSWORD_HASH;
@@ -27,6 +27,11 @@ export async function getAdminIdentity(): Promise<AdminIdentity | null> {
 export async function verifyAdminPassword(password: string): Promise<boolean> {
   const passwordHash = runtimePasswordHash();
   if (!passwordHash || password.length > 256) return false;
+  if (passwordHash.startsWith('sha256:')) {
+    const expected = fromBase64Url(passwordHash.slice('sha256:'.length));
+    const actual = new Uint8Array(await crypto.subtle.digest('SHA-256', encoder.encode(password)));
+    return constantTimeEqual(actual, expected);
+  }
   const separator = passwordHash.includes(':') ? ':' : '$';
   const [algorithm, iterationsRaw, saltRaw, expectedRaw] = passwordHash.split(separator);
   const iterations = Number(iterationsRaw);
@@ -36,11 +41,7 @@ export async function verifyAdminPassword(password: string): Promise<boolean> {
     const derived = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: fromBase64Url(saltRaw), iterations }, passwordKey, 256);
     const expected = fromBase64Url(expectedRaw);
     if (expected.byteLength !== 32) return false;
-    const timingSafeEqual = (crypto.subtle as SubtleCrypto & { timingSafeEqual?: (a: BufferSource, b: BufferSource) => boolean }).timingSafeEqual;
-    if (timingSafeEqual) return timingSafeEqual.call(crypto.subtle, derived, expected);
-    const actual = new Uint8Array(derived); let difference = 0;
-    for (let index = 0; index < actual.length; index += 1) difference |= actual[index] ^ expected[index];
-    return difference === 0;
+    return constantTimeEqual(new Uint8Array(derived), expected);
   } catch { return false; }
 }
 
@@ -117,4 +118,11 @@ function toBase64Url(value: ArrayBuffer): string { return btoa(String.fromCharCo
 function fromBase64Url(value: string): Uint8Array<ArrayBuffer> {
   const padded = value.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - value.length % 4) % 4);
   return Uint8Array.from(atob(padded), (character) => character.charCodeAt(0));
+}
+
+function constantTimeEqual(actual: Uint8Array, expected: Uint8Array): boolean {
+  if (actual.length !== expected.length) return false;
+  let difference = 0;
+  for (let index = 0; index < actual.length; index += 1) difference |= actual[index] ^ expected[index];
+  return difference === 0;
 }

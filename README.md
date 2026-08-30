@@ -31,7 +31,7 @@ Erforderliche Bindings:
 - R2: `FILES`
 - Secret: `ADMIN_PASSWORD_HASH` im Format `pbkdf2_sha256:210000:SALT:HASH`
 
-Das Pflege-Passwort wird nie im Repository gespeichert. Die Anwendung vergleicht ausschliesslich den PBKDF2-SHA-256-Hash, begrenzt Fehlversuche pro Client und legt nach erfolgreicher Anmeldung eine nicht erratbare Sitzung für zwölf Stunden in D1 an. Ein Cloudflare-Runtime-Wert kann den projektspezifischen Standard-Hash ersetzen.
+Das Pflege-Passwort wird nie im Repository gespeichert. Die Anwendung vergleicht ausschliesslich einen konstantzeitlich geprüften Hash des zufällig erzeugten Hochentropie-Passworts, begrenzt Fehlversuche pro Client und legt nach erfolgreicher Anmeldung eine nicht erratbare Sitzung für zwölf Stunden in D1 an. Ein Cloudflare-Runtime-Wert kann den projektspezifischen Standard-Hash durch PBKDF2-SHA-256 ersetzen.
 
 ## Qualitätsprüfung
 
