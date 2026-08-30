@@ -117,7 +117,6 @@ export function AdminEditor({ initialContent, initialMedia, user }: { initialCon
             <TextField label="Besuch: Ort-Titel" value={content.labels.visitPlaceTitle} onChange={(v) => update(['labels','visitPlaceTitle'], v)} />
             <TextField label="Routen-Link" value={content.labels.routeCta} onChange={(v) => update(['labels','routeCta'], v)} />
             <TextField label="Footer: Impressum" value={content.labels.footerImprint} onChange={(v) => update(['labels','footerImprint'], v)} />
-            <TextField label="Footer: Pflege" value={content.labels.footerCare} onChange={(v) => update(['labels','footerCare'], v)} />
             <TextField label="Impressum: Telefon" value={content.labels.legalPhone} onChange={(v) => update(['labels','legalPhone'], v)} />
             <TextField label="Impressum: E-Mail" value={content.labels.legalEmail} onChange={(v) => update(['labels','legalEmail'], v)} />
           </FieldGrid>

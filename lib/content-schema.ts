@@ -36,7 +36,7 @@ export const siteContentSchema = z.object({
     galleryEyebrow: shortText, galleryTitle: shortText, galleryLead: shortText, mapCta: shortText,
     visitHoursEyebrow: shortText, visitHoursTitle: shortText, visitOrderEyebrow: shortText, visitOrderTitle: shortText,
     visitPlaceEyebrow: shortText, visitPlaceTitle: shortText, routeCta: shortText,
-    footerImprint: shortText, footerCare: shortText, legalPhone: shortText, legalEmail: shortText,
+    footerImprint: shortText, legalPhone: shortText, legalEmail: shortText,
   }),
   seo: z.object({ home: seo, menu: seo, team: seo, contact: seo, links: seo, imprint: seo }),
 });

@@ -32,6 +32,7 @@ Erforderliche Bindings:
 - D1: `DB`
 - R2: `FILES`
 - Secret: `ADMIN_PASSWORD_HASH` im Format `pbkdf2_sha256:210000:SALT:HASH`
+- Variable: `SITE_URL` als kanonische öffentliche Basis-URL für Metadata, Open Graph, Robots und Sitemap
 
 Das Pflege-Passwort wird nie im Repository gespeichert. Ohne das Cloudflare-Secret bleibt die Anmeldung geschlossen. Die Anwendung vergleicht ausschliesslich einen konstantzeitlich geprüften Hash des Passworts, begrenzt Fehlversuche pro Client und legt nach erfolgreicher Anmeldung eine nicht erratbare Sitzung für zwölf Stunden in D1 an.
 

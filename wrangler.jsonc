@@ -6,6 +6,12 @@
   "compatibility_flags": ["nodejs_compat"],
   "workers_dev": true,
   "preview_urls": true,
+  "vars": {
+    "SITE_URL": "https://mec-roland.yannis-66678.workers.dev"
+  },
+  "secrets": {
+    "required": ["ADMIN_PASSWORD_HASH"]
+  },
   "no_bundle": true,
   "rules": [
     {

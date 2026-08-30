@@ -24,7 +24,7 @@ export default async function Home() {
       <p className="hero__note">{content.global.restaurantName} · Kaltbrunn</p>
       <div className="hero__scroll" aria-hidden="true"><span /> {content.labels.heroScroll}</div>
     </section>
-    <div className="marquee" aria-hidden="true"><div>{content.labels.marquee}</div></div>
+    <div className="marquee" aria-hidden="true"><div className="marquee__track"><span>{content.labels.marquee}</span><span>{content.labels.marquee}</span></div></div>
     <section className="welcome shell section-grid" aria-labelledby="welcome-title" data-reveal>
       <div><p className="eyebrow eyebrow--dark">{content.home.welcomeEyebrow}</p><h2 id="welcome-title">{content.home.welcomeTitle}</h2><div className="prose">{content.home.welcomeParagraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div><Link className="text-link text-link--large" href="/team/">{content.labels.homeTeamCta} <ArrowRight aria-hidden="true" /></Link></div>
       <Notice content={content.notice} />

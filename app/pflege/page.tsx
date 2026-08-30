@@ -4,7 +4,11 @@ import { getAdminIdentity } from '@/lib/admin-auth';
 import { getSiteContent, listMedia } from '@/lib/content-store';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Website-Pflege', robots: { index: false, follow: false } };
+export const metadata = {
+  title: 'Website-Pflege',
+  referrer: 'no-referrer',
+  robots: { index: false, follow: false, nocache: true, googleBot: { index: false, follow: false, noimageindex: true } },
+};
 
 export default async function PflegePage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const user = await getAdminIdentity();
