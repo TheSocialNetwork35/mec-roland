@@ -8,22 +8,29 @@ const SESSION_LIFETIME_SECONDS = 12 * 60 * 60;
 const encoder = new TextEncoder();
 type LoginRecord = { attempts: number; window_started: number; blocked_until: number };
 
+function runtimeValue(name: 'ADMIN_PASSWORD_HASH' | 'ADMIN_SESSION_SECRET'): string {
+  const workerValue = env[name];
+  return workerValue || process.env[name] || '';
+}
+
 export async function getAdminIdentity(): Promise<AdminIdentity | null> {
   const requestHeaders = await headers();
   const token = readCookie(requestHeaders.get('cookie'), COOKIE_NAME);
-  if (!token || !env.ADMIN_SESSION_SECRET) return null;
+  const sessionSecret = runtimeValue('ADMIN_SESSION_SECRET');
+  if (!token || !sessionSecret) return null;
   const [version, expiresRaw, nonce, signature] = token.split('.');
   const expires = Number(expiresRaw);
   if (version !== 'v1' || !expires || expires <= Math.floor(Date.now() / 1000) || !nonce || !signature) return null;
   const payload = `${version}.${expiresRaw}.${nonce}`;
-  if (!(await verifyHmac(payload, signature, env.ADMIN_SESSION_SECRET))) return null;
+  if (!(await verifyHmac(payload, signature, sessionSecret))) return null;
   return { email: 'pflege@mec-roland.ch', name: 'Mec Roland', provider: 'password' };
 }
 
 export async function verifyAdminPassword(password: string): Promise<boolean> {
-  if (!env.ADMIN_PASSWORD_HASH || password.length > 256) return false;
-  const separator = env.ADMIN_PASSWORD_HASH.includes(':') ? ':' : '$';
-  const [algorithm, iterationsRaw, saltRaw, expectedRaw] = env.ADMIN_PASSWORD_HASH.split(separator);
+  const passwordHash = runtimeValue('ADMIN_PASSWORD_HASH');
+  if (!passwordHash || password.length > 256) return false;
+  const separator = passwordHash.includes(':') ? ':' : '$';
+  const [algorithm, iterationsRaw, saltRaw, expectedRaw] = passwordHash.split(separator);
   const iterations = Number(iterationsRaw);
   if (algorithm !== 'pbkdf2_sha256' || !Number.isInteger(iterations) || iterations < 100_000 || iterations > 600_000) return false;
   try {
@@ -40,10 +47,11 @@ export async function verifyAdminPassword(password: string): Promise<boolean> {
 }
 
 export async function createSessionCookie(): Promise<string> {
-  if (!env.ADMIN_SESSION_SECRET) throw new Error('ADMIN_SESSION_SECRET fehlt');
+  const sessionSecret = runtimeValue('ADMIN_SESSION_SECRET');
+  if (!sessionSecret) throw new Error('ADMIN_SESSION_SECRET fehlt');
   const expires = Math.floor(Date.now() / 1000) + SESSION_LIFETIME_SECONDS;
   const payload = `v1.${expires}.${crypto.randomUUID()}`;
-  return `${COOKIE_NAME}=${payload}.${await signHmac(payload, env.ADMIN_SESSION_SECRET)}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${SESSION_LIFETIME_SECONDS}`;
+  return `${COOKIE_NAME}=${payload}.${await signHmac(payload, sessionSecret)}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${SESSION_LIFETIME_SECONDS}`;
 }
 
 export function clearSessionCookie(): string {
@@ -75,7 +83,7 @@ export async function recordLoginAttempt(request: Request, success: boolean): Pr
 async function findLoginRecord(request: Request): Promise<{ key: string; record: LoginRecord | null }> {
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS admin_login_attempts (key_hash TEXT PRIMARY KEY NOT NULL, attempts INTEGER NOT NULL, window_started INTEGER NOT NULL, blocked_until INTEGER NOT NULL)`).run();
   const ip = request.headers.get('cf-connecting-ip') || request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'local';
-  const key = await sha256(`${env.ADMIN_SESSION_SECRET || 'unconfigured'}:${ip}`);
+  const key = await sha256(`${runtimeValue('ADMIN_SESSION_SECRET') || 'unconfigured'}:${ip}`);
   const record = await env.DB.prepare('SELECT attempts, window_started, blocked_until FROM admin_login_attempts WHERE key_hash = ?').bind(key).first<LoginRecord>();
   return { key, record };
 }
