@@ -227,9 +227,11 @@ main { position: relative; overflow: clip; background: var(--background); }
 .hero__scroll { position: absolute; z-index: 3; left: 32px; bottom: 34px; display: flex; align-items: center; gap: 12px; color: rgb(255 255 255 / 55%); font-size: .66rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
 .hero__scroll span { width: 36px; height: 1px; display: block; overflow: hidden; background: rgb(255 255 255 / 30%); }
 .hero__scroll span::after { content: ''; width: 100%; height: 100%; display: block; background: #fff; animation: scroll-line 1.8s var(--ease-out) infinite; }
-.marquee { --marquee-gap: clamp(2.5rem, 6vw, 6rem); overflow: hidden; padding: 17px 0; background: var(--brand); color: #fff; font-family: var(--font-display), sans-serif; font-size: clamp(1.05rem, 1.8vw, 1.45rem); font-weight: 650; letter-spacing: .01em; white-space: nowrap; }
-.marquee__track { width: max-content; display: flex; align-items: center; animation: marquee 22s linear infinite; will-change: transform; }
-.marquee__track > span { flex: none; padding-right: var(--marquee-gap); }
+.marquee { --marquee-gap: clamp(1.5rem, 3vw, 3.25rem); overflow: hidden; padding: 17px 0; background: var(--brand); color: #fff; font-family: var(--font-display), sans-serif; font-size: clamp(1.05rem, 1.8vw, 1.45rem); font-weight: 650; letter-spacing: .01em; white-space: nowrap; }
+.marquee__track { width: max-content; display: flex; align-items: center; animation: marquee 55s linear infinite; will-change: transform; }
+.marquee__group { flex: none; display: flex; align-items: center; }
+.marquee__item { flex: none; display: inline-flex; align-items: center; }
+.marquee__item::after { content: '•'; margin-inline: calc(var(--marquee-gap) / 2); color: rgb(255 255 255 / 68%); font-size: .72em; }
 
 .page-hero { min-height: min(700px, 72svh); }
 .page-hero > img { transform: scale(1.02); animation: hero-in 1.1s var(--ease-out) both; }

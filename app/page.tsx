@@ -11,6 +11,15 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Home() {
   const content = await getSiteContent();
+  const marqueeWords = content.labels.marquee
+    .split('·')
+    .map((word) => word.trim())
+    .filter(Boolean);
+  const marqueeSequence = Array.from(
+    { length: 12 },
+    () => marqueeWords.length > 0 ? marqueeWords : [content.labels.marquee],
+  ).flat();
+
   return <PublicFrame content={content}>
     <section className="hero" aria-labelledby="hero-title">
       <img className="hero__image" src={content.home.heroImage} alt="Frisch zubereiteter Burger mit Pommes" width="1600" height="733" fetchPriority="high" />
@@ -24,7 +33,11 @@ export default async function Home() {
       <p className="hero__note">{content.global.restaurantName} · Kaltbrunn</p>
       <div className="hero__scroll" aria-hidden="true"><span /> {content.labels.heroScroll}</div>
     </section>
-    <div className="marquee" aria-hidden="true"><div className="marquee__track"><span>{content.labels.marquee}</span><span>{content.labels.marquee}</span></div></div>
+    <div className="marquee" aria-hidden="true">
+      <div className="marquee__track">
+        {[0, 1].map((group) => <div className="marquee__group" key={group}>{marqueeSequence.map((word, index) => <span className="marquee__item" key={`${group}-${index}`}>{word}</span>)}</div>)}
+      </div>
+    </div>
     <section className="welcome shell section-grid" aria-labelledby="welcome-title" data-reveal>
       <div><p className="eyebrow eyebrow--dark">{content.home.welcomeEyebrow}</p><h2 id="welcome-title">{content.home.welcomeTitle}</h2><div className="prose">{content.home.welcomeParagraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div><Link className="text-link text-link--large" href="/team/">{content.labels.homeTeamCta} <ArrowRight aria-hidden="true" /></Link></div>
       <Notice content={content.notice} />
