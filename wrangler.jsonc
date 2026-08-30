@@ -10,7 +10,7 @@
     "SITE_URL": "https://mec-roland.yannis-66678.workers.dev"
   },
   "secrets": {
-    "required": ["ADMIN_PASSWORD_HASH"]
+    "required": ["ADMIN_PASSWORD"]
   },
   "no_bundle": true,
   "rules": [

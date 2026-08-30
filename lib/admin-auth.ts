@@ -8,8 +8,8 @@ const SESSION_LIFETIME_SECONDS = 12 * 60 * 60;
 const encoder = new TextEncoder();
 type LoginRecord = { attempts: number; window_started: number; blocked_until: number };
 
-function runtimePasswordHash(): string {
-  return env.ADMIN_PASSWORD_HASH || process.env.ADMIN_PASSWORD_HASH || '';
+function runtimePassword(): string {
+  return env.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD || '';
 }
 
 export async function getAdminIdentity(): Promise<AdminIdentity | null> {
@@ -24,24 +24,13 @@ export async function getAdminIdentity(): Promise<AdminIdentity | null> {
 }
 
 export async function verifyAdminPassword(password: string): Promise<boolean> {
-  const passwordHash = runtimePasswordHash();
-  if (!passwordHash || password.length > 256) return false;
-  if (passwordHash.startsWith('sha256:')) {
-    const expected = fromBase64Url(passwordHash.slice('sha256:'.length));
-    const actual = new Uint8Array(await crypto.subtle.digest('SHA-256', encoder.encode(password)));
-    return constantTimeEqual(actual, expected);
-  }
-  const separator = passwordHash.includes(':') ? ':' : '$';
-  const [algorithm, iterationsRaw, saltRaw, expectedRaw] = passwordHash.split(separator);
-  const iterations = Number(iterationsRaw);
-  if (algorithm !== 'pbkdf2_sha256' || !Number.isInteger(iterations) || iterations < 100_000 || iterations > 600_000) return false;
-  try {
-    const passwordKey = await crypto.subtle.importKey('raw', encoder.encode(password), 'PBKDF2', false, ['deriveBits']);
-    const derived = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: fromBase64Url(saltRaw), iterations }, passwordKey, 256);
-    const expected = fromBase64Url(expectedRaw);
-    if (expected.byteLength !== 32) return false;
-    return constantTimeEqual(new Uint8Array(derived), expected);
-  } catch { return false; }
+  const configuredPassword = runtimePassword();
+  if (!configuredPassword || configuredPassword.length > 256 || password.length > 256) return false;
+  const [actual, expected] = await Promise.all([
+    crypto.subtle.digest('SHA-256', encoder.encode(password)),
+    crypto.subtle.digest('SHA-256', encoder.encode(configuredPassword)),
+  ]);
+  return constantTimeEqual(new Uint8Array(actual), new Uint8Array(expected));
 }
 
 export async function createSessionCookie(): Promise<string> {
@@ -114,11 +103,6 @@ async function ensureAuthTables(): Promise<void> {
 
 async function sha256(value: string): Promise<string> { return toBase64Url(await crypto.subtle.digest('SHA-256', encoder.encode(value))); }
 function toBase64Url(value: ArrayBuffer): string { return btoa(String.fromCharCode(...new Uint8Array(value))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
-function fromBase64Url(value: string): Uint8Array<ArrayBuffer> {
-  const padded = value.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - value.length % 4) % 4);
-  return Uint8Array.from(atob(padded), (character) => character.charCodeAt(0));
-}
-
 function constantTimeEqual(actual: Uint8Array, expected: Uint8Array): boolean {
   if (actual.length !== expected.length) return false;
   let difference = 0;

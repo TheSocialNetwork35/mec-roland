@@ -15,7 +15,7 @@ npm install
 npm run dev
 ```
 
-Die lokale Umgebung stellt D1 und R2 bereit. Öffentliche Routen bleiben frei; `/pflege` und die Schreib-API prüfen eine zufällige, `HttpOnly`-geschützte Sitzung serverseitig in D1. Für die lokale Anmeldung muss `ADMIN_PASSWORD_HASH` in einer ignorierten `.dev.vars` gesetzt werden (siehe `.dev.vars.example`).
+Die lokale Umgebung stellt D1 und R2 bereit. Öffentliche Routen bleiben frei; `/pflege` und die Schreib-API prüfen eine zufällige, `HttpOnly`-geschützte Sitzung serverseitig in D1. Für die lokale Anmeldung muss `ADMIN_PASSWORD` in einer ignorierten `.dev.vars` gesetzt werden (siehe `.dev.vars.example`).
 
 ## Produktion
 
@@ -23,7 +23,7 @@ Die Anwendung wird als Cloudflare Worker mit global ausgelieferten Static Assets
 
 ```bash
 npx wrangler d1 migrations apply mec-roland-db --remote
-npx wrangler secret put ADMIN_PASSWORD_HASH
+npx wrangler secret put ADMIN_PASSWORD
 npm run deploy
 ```
 
@@ -31,22 +31,21 @@ Erforderliche Bindings:
 
 - D1: `DB`
 - R2: `FILES`
-- Secret: `ADMIN_PASSWORD_HASH` im Format `pbkdf2_sha256:210000:SALT:HASH`
+- Secret: `ADMIN_PASSWORD` mit dem normalen Pflege-Passwort als Wert
 - Variable: `SITE_URL` als kanonische öffentliche Basis-URL für Metadata, Open Graph, Robots und Sitemap
 
-Das Pflege-Passwort wird nie im Repository gespeichert. Ohne das Cloudflare-Secret bleibt die Anmeldung geschlossen. Die Anwendung vergleicht ausschliesslich einen konstantzeitlich geprüften Hash des Passworts, begrenzt Fehlversuche pro Client und legt nach erfolgreicher Anmeldung eine nicht erratbare Sitzung für zwölf Stunden in D1 an.
+Das Pflege-Passwort wird nie im Repository gespeichert. Es liegt als verborgenes Cloudflare-Secret vor und ist dort nach dem Speichern nicht mehr auslesbar. Ohne dieses Secret bleibt die Anmeldung geschlossen. Die Anwendung vergleicht das eingegebene Passwort serverseitig in konstanter Zeit, begrenzt Fehlversuche pro Client und legt nach erfolgreicher Anmeldung eine nicht erratbare Sitzung für zwölf Stunden in D1 an.
 
 ### Pflege-Passwort ändern
 
-Das bestehende Klartext-Passwort kann nicht aus dem Hash ausgelesen werden. Zum Zurücksetzen wird lokal ein neuer PBKDF2-Hash erzeugt und anschliessend als Cloudflare-Secret gespeichert:
+Das Passwort wird ohne besonderes Hash-Format direkt als Cloudflare-Secret gesetzt:
 
 ```bash
-npm run auth:hash
-npx wrangler secret put ADMIN_PASSWORD_HASH
+npx wrangler secret put ADMIN_PASSWORD
 npx wrangler d1 execute mec-roland-db --remote --command "DELETE FROM admin_sessions"
 ```
 
-Der erste Befehl fragt das neue Passwort verdeckt zweimal ab und gibt ausschliesslich den Hash aus. Diesen Hash beim zweiten Befehl in die verdeckte Cloudflare-Eingabe einfügen. Der dritte Befehl meldet vorhandene Pflege-Sitzungen ab, damit nur noch das neue Passwort gilt.
+Beim ersten Befehl das neue Passwort direkt in die verdeckte Eingabe schreiben. Der zweite Befehl meldet vorhandene Pflege-Sitzungen ab, damit nur noch das neue Passwort gilt. Der Passwortwert gehört weder in Git noch direkt in einen Shell-Befehl.
 
 ## Qualitätsprüfung
 
