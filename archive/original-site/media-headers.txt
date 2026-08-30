@@ -1,0 +1,16 @@
+HTTP/2 200 
+date: Sun, 30 Aug 2026 13:51:49 GMT
+server: Apache
+x-robots-tag: noindex
+link: <https://mec-roland.ch/wp-json/>; rel="https://api.w.org/"
+x-content-type-options: nosniff
+access-control-expose-headers: X-WP-Total, X-WP-TotalPages, Link
+access-control-allow-headers: Authorization, X-WP-Nonce, Content-Disposition, Content-MD5, Content-Type
+x-wp-total: 43
+x-wp-totalpages: 1
+allow: GET
+vary: Origin,User-Agent
+wpo-cache-status: not cached
+wpo-cache-message: In the settings, caching is disabled for matches for one of the current request's GET parameters
+content-type: application/json; charset=UTF-8
+

@@ -1,0 +1,1 @@
+jQuery(function($){$('#footer-info').html("\u00a9 <span class=\"divibooster_year\"><\/span><script>jQuery(function($){$(\".divibooster_year\").text(new Date().getFullYear());});<\/script> Mec Roland GmbH   |   <a href=\"\/impressum\">Impressum<a>");});

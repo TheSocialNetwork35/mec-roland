@@ -1,0 +1,62 @@
+[
+  {
+    "file": "impressum.html",
+    "title": "Impressum | Mec Roland, Kaltbrunn",
+    "bodyClass": "wp-singular page-template-default page page-id-24 custom-background wp-theme-Divi dbdb_divi_2_4_up desktop et_pb_button_helper_class et_fixed_nav et_show_nav et_secondary_nav_enabled et_primary_nav_dropdown_animation_expand et_secondary_nav_dropdown_animation_fade et_header_style_centered et_pb_footer_columns1 et_boxed_layout et_cover_background et_pb_gutter osx et_pb_gutters3 et_pb_pagebuilder_layout et_no_sidebar et_divi_theme et-db",
+    "stylesheets": [
+      "https://mec-roland.ch/wp-content/uploads/wtfdivi/wp_head.css?ver=1576598420",
+      "https://fonts.googleapis.com/css?family=Baloo:",
+      "https://mec-roland.ch/wp-includes/css/dist/block-library/style.min.css?ver=6.8.8"
+    ]
+  },
+  {
+    "file": "kontakt.html",
+    "title": "Kontakt | Mec Roland, Kaltbrunn",
+    "bodyClass": "wp-singular page-template-default page page-id-20 custom-background wp-theme-Divi dbdb_divi_2_4_up desktop et_pb_button_helper_class et_fixed_nav et_show_nav et_secondary_nav_enabled et_primary_nav_dropdown_animation_expand et_secondary_nav_dropdown_animation_fade et_header_style_centered et_pb_footer_columns1 et_boxed_layout et_cover_background et_pb_gutter windows et_pb_gutters3 et_pb_pagebuilder_layout et_no_sidebar et_divi_theme et-db",
+    "stylesheets": [
+      "https://mec-roland.ch/wp-content/uploads/wtfdivi/wp_head.css?ver=1576598420",
+      "https://fonts.googleapis.com/css?family=Baloo:",
+      "https://mec-roland.ch/wp-includes/css/dist/block-library/style.min.css?ver=6.8.8"
+    ]
+  },
+  {
+    "file": "links.html",
+    "title": "Links | Mec Roland, Kaltbrunn",
+    "bodyClass": "wp-singular page-template-default page page-id-22 custom-background wp-theme-Divi dbdb_divi_2_4_up desktop et_pb_button_helper_class et_fixed_nav et_show_nav et_secondary_nav_enabled et_primary_nav_dropdown_animation_expand et_secondary_nav_dropdown_animation_fade et_header_style_centered et_pb_footer_columns1 et_boxed_layout et_cover_background et_pb_gutter windows et_pb_gutters3 et_pb_pagebuilder_layout et_no_sidebar et_divi_theme et-db",
+    "stylesheets": [
+      "https://mec-roland.ch/wp-content/uploads/wtfdivi/wp_head.css?ver=1576598420",
+      "https://fonts.googleapis.com/css?family=Baloo:",
+      "https://mec-roland.ch/wp-includes/css/dist/block-library/style.min.css?ver=6.8.8"
+    ]
+  },
+  {
+    "file": "menue.html",
+    "title": "Menü | Mec Roland, Kaltbrunn",
+    "bodyClass": "wp-singular page-template-default page page-id-16 custom-background wp-theme-Divi dbdb_divi_2_4_up desktop et_pb_button_helper_class et_fixed_nav et_show_nav et_secondary_nav_enabled et_primary_nav_dropdown_animation_expand et_secondary_nav_dropdown_animation_fade et_header_style_centered et_pb_footer_columns1 et_boxed_layout et_cover_background et_pb_gutter et_pb_gutters3 et_pb_pagebuilder_layout et_no_sidebar et_divi_theme et-db",
+    "stylesheets": [
+      "https://mec-roland.ch/wp-content/uploads/wtfdivi/wp_head.css?ver=1576598420",
+      "https://fonts.googleapis.com/css?family=Baloo:",
+      "https://mec-roland.ch/wp-includes/css/dist/block-library/style.min.css?ver=6.8.8"
+    ]
+  },
+  {
+    "file": "restaurant.html",
+    "title": "Mec Roland, Kaltbrunn | Das Restaurant mit Herz",
+    "bodyClass": "home wp-singular page-template-default page page-id-14 custom-background wp-theme-Divi dbdb_divi_2_4_up desktop et_pb_button_helper_class et_fixed_nav et_show_nav et_secondary_nav_enabled et_primary_nav_dropdown_animation_expand et_secondary_nav_dropdown_animation_fade et_header_style_centered et_pb_footer_columns1 et_boxed_layout et_cover_background et_pb_gutter windows et_pb_gutters3 et_pb_pagebuilder_layout et_no_sidebar et_divi_theme et-db",
+    "stylesheets": [
+      "https://mec-roland.ch/wp-content/uploads/wtfdivi/wp_head.css?ver=1576598420",
+      "https://fonts.googleapis.com/css?family=Baloo:",
+      "https://mec-roland.ch/wp-includes/css/dist/block-library/style.min.css?ver=6.8.8"
+    ]
+  },
+  {
+    "file": "team.html",
+    "title": "Team | Mec Roland, Kaltbrunn",
+    "bodyClass": "wp-singular page-template-default page page-id-18 custom-background wp-theme-Divi dbdb_divi_2_4_up desktop et_pb_button_helper_class et_fixed_nav et_show_nav et_secondary_nav_enabled et_primary_nav_dropdown_animation_expand et_secondary_nav_dropdown_animation_fade et_header_style_centered et_pb_footer_columns1 et_boxed_layout et_cover_background et_pb_gutter osx et_pb_gutters3 et_pb_pagebuilder_layout et_no_sidebar et_divi_theme et-db",
+    "stylesheets": [
+      "https://mec-roland.ch/wp-content/uploads/wtfdivi/wp_head.css?ver=1576598420",
+      "https://fonts.googleapis.com/css?family=Baloo:",
+      "https://mec-roland.ch/wp-includes/css/dist/block-library/style.min.css?ver=6.8.8"
+    ]
+  }
+]
