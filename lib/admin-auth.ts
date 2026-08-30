@@ -7,27 +7,25 @@ const COOKIE_NAME = 'mec_admin_session';
 const SESSION_LIFETIME_SECONDS = 12 * 60 * 60;
 const encoder = new TextEncoder();
 type LoginRecord = { attempts: number; window_started: number; blocked_until: number };
+const DEFAULT_PASSWORD_HASH = 'pbkdf2_sha256:210000:MqAbW1-Odl4Kaq1BZP6oO-5X:hoh03MoYBoDL5dN6x5dFcKe0lAB_Y_INway8lezp-3g';
 
-function runtimeValue(name: 'ADMIN_PASSWORD_HASH' | 'ADMIN_SESSION_SECRET'): string {
-  const workerValue = env[name];
-  return workerValue || process.env[name] || '';
+function runtimePasswordHash(): string {
+  return env.ADMIN_PASSWORD_HASH || process.env.ADMIN_PASSWORD_HASH || DEFAULT_PASSWORD_HASH;
 }
 
 export async function getAdminIdentity(): Promise<AdminIdentity | null> {
   const requestHeaders = await headers();
   const token = readCookie(requestHeaders.get('cookie'), COOKIE_NAME);
-  const sessionSecret = runtimeValue('ADMIN_SESSION_SECRET');
-  if (!token || !sessionSecret) return null;
-  const [version, expiresRaw, nonce, signature] = token.split('.');
-  const expires = Number(expiresRaw);
-  if (version !== 'v1' || !expires || expires <= Math.floor(Date.now() / 1000) || !nonce || !signature) return null;
-  const payload = `${version}.${expiresRaw}.${nonce}`;
-  if (!(await verifyHmac(payload, signature, sessionSecret))) return null;
-  return { email: 'pflege@mec-roland.ch', name: 'Mec Roland', provider: 'password' };
+  if (!token) return null;
+  try {
+    const record = await env.DB.prepare('SELECT expires_at FROM admin_sessions WHERE token_hash = ?').bind(await sha256(token)).first<{ expires_at: number }>();
+    if (!record || record.expires_at <= Math.floor(Date.now() / 1000)) return null;
+    return { email: 'pflege@mec-roland.ch', name: 'Mec Roland', provider: 'password' };
+  } catch { return null; }
 }
 
 export async function verifyAdminPassword(password: string): Promise<boolean> {
-  const passwordHash = runtimeValue('ADMIN_PASSWORD_HASH');
+  const passwordHash = runtimePasswordHash();
   if (!passwordHash || password.length > 256) return false;
   const separator = passwordHash.includes(':') ? ':' : '$';
   const [algorithm, iterationsRaw, saltRaw, expectedRaw] = passwordHash.split(separator);
@@ -47,15 +45,25 @@ export async function verifyAdminPassword(password: string): Promise<boolean> {
 }
 
 export async function createSessionCookie(): Promise<string> {
-  const sessionSecret = runtimeValue('ADMIN_SESSION_SECRET');
-  if (!sessionSecret) throw new Error('ADMIN_SESSION_SECRET fehlt');
+  await ensureAuthTables();
   const expires = Math.floor(Date.now() / 1000) + SESSION_LIFETIME_SECONDS;
-  const payload = `v1.${expires}.${crypto.randomUUID()}`;
-  return `${COOKIE_NAME}=${payload}.${await signHmac(payload, sessionSecret)}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${SESSION_LIFETIME_SECONDS}`;
+  const random = crypto.getRandomValues(new Uint8Array(32));
+  const token = toBase64Url(random.buffer);
+  await env.DB.batch([
+    env.DB.prepare('DELETE FROM admin_sessions WHERE expires_at <= ?').bind(Math.floor(Date.now() / 1000)),
+    env.DB.prepare('INSERT INTO admin_sessions (token_hash, expires_at) VALUES (?, ?)').bind(await sha256(token), expires),
+  ]);
+  return `${COOKIE_NAME}=${token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${SESSION_LIFETIME_SECONDS}`;
 }
 
 export function clearSessionCookie(): string {
   return `${COOKIE_NAME}=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0`;
+}
+
+export async function revokeSession(cookieHeader: string | null): Promise<void> {
+  const token = readCookie(cookieHeader, COOKIE_NAME);
+  if (!token) return;
+  try { await env.DB.prepare('DELETE FROM admin_sessions WHERE token_hash = ?').bind(await sha256(token)).run(); } catch { /* A cleared cookie still ends the browser session. */ }
 }
 
 export async function getLoginRateLimit(request: Request): Promise<{ allowed: boolean; retryAfter?: number }> {
@@ -81,9 +89,9 @@ export async function recordLoginAttempt(request: Request, success: boolean): Pr
 }
 
 async function findLoginRecord(request: Request): Promise<{ key: string; record: LoginRecord | null }> {
-  await env.DB.prepare(`CREATE TABLE IF NOT EXISTS admin_login_attempts (key_hash TEXT PRIMARY KEY NOT NULL, attempts INTEGER NOT NULL, window_started INTEGER NOT NULL, blocked_until INTEGER NOT NULL)`).run();
+  await ensureAuthTables();
   const ip = request.headers.get('cf-connecting-ip') || request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'local';
-  const key = await sha256(`${runtimeValue('ADMIN_SESSION_SECRET') || 'unconfigured'}:${ip}`);
+  const key = await sha256(`mec-roland-login-rate-v1:${ip}`);
   const record = await env.DB.prepare('SELECT attempts, window_started, blocked_until FROM admin_login_attempts WHERE key_hash = ?').bind(key).first<LoginRecord>();
   return { key, record };
 }
@@ -97,16 +105,11 @@ function readCookie(cookieHeader: string | null, name: string): string | null {
   return null;
 }
 
-async function signHmac(value: string, secret: string): Promise<string> {
-  const key = await crypto.subtle.importKey('raw', encoder.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
-  return toBase64Url(await crypto.subtle.sign('HMAC', key, encoder.encode(value)));
-}
-
-async function verifyHmac(value: string, signature: string, secret: string): Promise<boolean> {
-  try {
-    const key = await crypto.subtle.importKey('raw', encoder.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']);
-    return crypto.subtle.verify('HMAC', key, fromBase64Url(signature), encoder.encode(value));
-  } catch { return false; }
+async function ensureAuthTables(): Promise<void> {
+  await env.DB.batch([
+    env.DB.prepare('CREATE TABLE IF NOT EXISTS admin_login_attempts (key_hash TEXT PRIMARY KEY NOT NULL, attempts INTEGER NOT NULL, window_started INTEGER NOT NULL, blocked_until INTEGER NOT NULL)'),
+    env.DB.prepare('CREATE TABLE IF NOT EXISTS admin_sessions (token_hash TEXT PRIMARY KEY NOT NULL, expires_at INTEGER NOT NULL)'),
+  ]);
 }
 
 async function sha256(value: string): Promise<string> { return toBase64Url(await crypto.subtle.digest('SHA-256', encoder.encode(value))); }

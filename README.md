@@ -15,7 +15,7 @@ npm install
 npm run dev
 ```
 
-Die lokale Umgebung stellt D1 und R2 bereit. Öffentliche Routen bleiben frei; `/pflege` und die Schreib-API prüfen eine signierte, `HttpOnly`-geschützte Sitzung serverseitig. Für den lokalen Login müssen `ADMIN_PASSWORD_HASH` und `ADMIN_SESSION_SECRET` gesetzt sein (siehe `.env.example`).
+Die lokale Umgebung stellt D1 und R2 bereit. Öffentliche Routen bleiben frei; `/pflege` und die Schreib-API prüfen eine zufällige, `HttpOnly`-geschützte Sitzung serverseitig in D1. `ADMIN_PASSWORD_HASH` kann optional gesetzt werden (siehe `.env.example`).
 
 ## Produktion
 
@@ -30,9 +30,8 @@ Erforderliche Bindings:
 - D1: `DB`
 - R2: `FILES`
 - Secret: `ADMIN_PASSWORD_HASH` im Format `pbkdf2_sha256:210000:SALT:HASH`
-- Secret: `ADMIN_SESSION_SECRET` als zufälliger Wert mit mindestens 32 Bytes
 
-Das Pflege-Passwort wird nie im Repository gespeichert. Die Anwendung vergleicht ausschliesslich den PBKDF2-SHA-256-Hash, begrenzt Fehlversuche pro Client und setzt nach erfolgreicher Anmeldung eine signierte Sitzung für zwölf Stunden. Beide Werte werden in Cloudflare als verschlüsselte Secrets konfiguriert.
+Das Pflege-Passwort wird nie im Repository gespeichert. Die Anwendung vergleicht ausschliesslich den PBKDF2-SHA-256-Hash, begrenzt Fehlversuche pro Client und legt nach erfolgreicher Anmeldung eine nicht erratbare Sitzung für zwölf Stunden in D1 an. Ein Cloudflare-Runtime-Wert kann den projektspezifischen Standard-Hash ersetzen.
 
 ## Qualitätsprüfung
 
