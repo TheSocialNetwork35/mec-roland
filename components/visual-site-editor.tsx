@@ -80,8 +80,8 @@ export function VisualSiteEditor({ initialContent, initialMedia, user }: { initi
     const click = (event: MouseEvent) => {
       const activeTool = toolRef.current;
       if (activeTool === 'browse') return;
-      const target = event.target instanceof Element ? event.target : null;
-      if (!target) return;
+      const target = event.target as Element | null;
+      if (!target || typeof target.closest !== 'function') return;
       const selector = activeTool === 'text' ? '[data-cms-text]' : activeTool === 'media' ? '[data-cms-image],[data-cms-file]' : '[data-cms-link]';
       const editable = target.closest<HTMLElement>(selector);
       if (!editable) return;
