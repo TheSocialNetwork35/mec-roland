@@ -15,6 +15,9 @@ export function SiteFooter({ content }: { content: SiteContent }) {
       <p><span data-cms-text="global.addressStreet" data-cms-label="Strasse">{global.addressStreet}</span> · <span data-cms-text="global.addressPostalCity" data-cms-label="PLZ und Ort">{global.addressPostalCity}</span></p>
       <div className="footer__links"><a href={`tel:${global.phoneHref}`} data-cms-link="global.phoneHref" data-cms-label="Telefon-Link"><span data-cms-text="global.phoneDisplay" data-cms-label="Telefonnummer">{global.phoneDisplay}</span></a><a href={`mailto:${global.emailPrimary}`} data-cms-link="global.emailPrimary" data-cms-label="E-Mail-Link"><span data-cms-text="global.emailPrimary" data-cms-label="E-Mail-Adresse">{global.emailPrimary}</span></a><Link href="/impressum/"><span data-cms-text="labels.footerImprint" data-cms-label="Impressum-Linktext">{labels.footerImprint}</span></Link><a className="footer__route" href={global.mapUrl} target="_blank" rel="noreferrer" aria-label={labels.routeCta} data-cms-link="global.mapUrl" data-cms-label="Google-Maps-Link"><ArrowUpRight aria-hidden="true" /></a></div>
     </div>
-    <div className="shell footer__fineprint">© {new Date().getFullYear()} <span data-cms-text="global.companyName" data-cms-label="Firmenname">{global.companyName}</span> · <span data-cms-text="global.footerText" data-cms-label="Footer-Text">{global.footerText}</span></div>
+    <div className="shell footer__fineprint">
+      <span>© {new Date().getFullYear()} <span data-cms-text="global.companyName" data-cms-label="Firmenname">{global.companyName}</span> · <span data-cms-text="global.footerText" data-cms-label="Footer-Text">{global.footerText}</span></span>
+      <span className="footer__credit">Made by <a href="https://zhstudio.ch">ZhStudio</a></span>
+    </div>
   </footer>;
 }
