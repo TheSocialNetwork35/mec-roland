@@ -50,6 +50,15 @@ export function VisualSiteEditor({ initialContent, initialMedia, user }: { initi
     if (root) root.dataset.cmsTool = tool;
     setStatus(tool === 'browse' ? 'Links und Navigation funktionieren normal.' : `${toolLabels[tool]}-Werkzeug aktiv: gewünschten Inhalt anklicken.`);
   }, [tool]);
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      try {
+        const path = frameRef.current?.contentWindow?.location.pathname;
+        if (path) setCurrentPath((current) => current === path ? current : path);
+      } catch { /* The preview is always same-origin; ignore transient navigation states. */ }
+    }, 250);
+    return () => window.clearInterval(timer);
+  }, []);
 
   function connectPreview() {
     const frame = frameRef.current; const doc = frame?.contentDocument;
